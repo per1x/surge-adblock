@@ -2,13 +2,15 @@ import re, sys, urllib.parse, urllib.request
 from collections import OrderedDict
 
 B = "https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/"
-APPS = ["百度贴吧", "百度网盘", "拼多多", "淘宝", "京东", "豆瓣", "脉脉", "闲鱼",
+APPS = ["广告平台", "百度贴吧", "百度网盘", "拼多多", "淘宝", "京东", "豆瓣", "脉脉", "闲鱼",
         "高德地图", "小黑盒", "什么值得买", "知乎", "最右",
         "12306", "丰巢", "虎扑", "迅雷", "X"]
 # 可莉版豆瓣、丰巢需要 IPA 重签名，App Store 版用奶思的；X 可莉仓库里没有
 F = "https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/"
 OVERRIDE = {"豆瓣": F + "partD/Douban.sgmodule", "丰巢": F + "partF/FengChao.sgmodule",
-            "X": F + "partT/Twitter.sgmodule"}
+            "X": F + "partT/Twitter.sgmodule",
+            # 可莉的通用规则：拦截穿山甲、广点通、百度、快手联盟等广告 SDK
+            "广告平台": B + urllib.parse.quote("广告平台拦截器.sgmodule")}
 SRC = [(a, OVERRIDE.get(a) or B + urllib.parse.quote(a + "去广告.sgmodule")) for a in APPS]
 SRC.insert(10, ("YouTube", "https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule"))
 
