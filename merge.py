@@ -54,6 +54,8 @@ for sec, lines in sections.items():
     if sec == "[MITM]":
         continue
     out += ["", sec] + lines
+# 豆瓣广告图走 img*.doubanio.com/view/dale-online/dale_ad/，要解密才能被 URL Rewrite 拦下
+hosts += ["img*.doubanio.com"]
 out += ["", "[MITM]", "hostname = %APPEND% " + ", ".join(OrderedDict.fromkeys(hosts))]
 open(sys.argv[1], "w", encoding="utf-8").write("\n".join(out) + "\n")
 print("ok", len(out), "lines,", len(set(hosts)), "hosts")
