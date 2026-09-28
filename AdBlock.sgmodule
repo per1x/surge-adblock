@@ -1,0 +1,398 @@
+#!name=去广告合集
+#!desc=百度贴吧/网盘、拼多多、淘宝、京东、豆瓣、脉脉、闲鱼、高德、YouTube、小黑盒、什么值得买、知乎、最右
+#!arguments=per_filter_video_thread:"true",屏蔽上传按钮:true,屏蔽选段按钮:true,屏蔽Shorts按钮:false,字幕翻译语言:off,启用调试模式:false
+#!arguments-desc=- 屏蔽参数：[true, false] \n- 翻译参数：[语言代码, off] \n\n1. 语言代码遵循 Google Translate Languages Codes, 当填入 off 时关闭翻译\n2. 开启调试模式用于输出更多日志
+
+[Rule]
+# 百度贴吧
+DOMAIN,180.76.76.200,REJECT,extended-matching,pre-matching
+IP-CIDR,180.76.76.200/32,REJECT,no-resolve,pre-matching
+# 拼多多
+AND,((URL-REGEX,"^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/d(\d)?",extended-matching),(USER-AGENT,"*com.xunmeng.pinduoduo*")),REJECT
+AND,((URL-REGEX,"^http:\/\/\[[0-9a-fA-F:]+\]\/d(\d)?\?",extended-matching),(USER-AGENT,"*com.xunmeng.pinduoduo*")),REJECT
+AND,((DOMAIN,api.pinduoduo.com,extended-matching),(PROTOCOL,QUIC)),REJECT
+DOMAIN,titan.pinduoduo.com,REJECT-NO-DROP,extended-matching,pre-matching
+DOMAIN,xg.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,cdl-1.pddpic.com,REJECT,extended-matching,pre-matching
+DOMAIN,titan.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,cdl-p2.pddpic.com,REJECT,extended-matching,pre-matching
+DOMAIN,cd-1.pddpic.com,REJECT,extended-matching,pre-matching
+DOMAIN,apm.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,th-b.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,ta.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,th.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,th-a.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,ta-a.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,meta.pinduoduo.com,REJECT,extended-matching,pre-matching
+DOMAIN,apm-a.pinduoduo.com,REJECT,extended-matching,pre-matching
+# 淘宝
+DOMAIN,adashx.m.taobao.com,REJECT,extended-matching,pre-matching
+DOMAIN,ossgw.alicdn.com,REJECT,extended-matching,pre-matching
+DOMAIN,ems.youku.com,REJECT,extended-matching,pre-matching
+DOMAIN,hudong.alicdn.com,REJECT,extended-matching,pre-matching
+DOMAIN,h-adashx.ut.taobao.com,REJECT,extended-matching,pre-matching
+DOMAIN,ut.taobao.com,REJECT,extended-matching,pre-matching
+# 京东
+URL-REGEX,"^http:\/\/\w{32}\.jddebug\.com\/diagnose\?",REJECT,extended-matching
+# 高德地图
+DOMAIN,amap-aos-info-nogw.amap.com,REJECT,extended-matching,pre-matching
+DOMAIN,free-aos-cdn-image.amap.com,REJECT,extended-matching,pre-matching
+DOMAIN-SUFFIX,v.smtcdns.com,REJECT,extended-matching,pre-matching
+# 什么值得买
+DOMAIN,adx-api.zdmimg.com,REJECT,extended-matching,pre-matching
+# 知乎
+DOMAIN,appcloud.zhihu.com,REJECT,extended-matching,pre-matching
+DOMAIN,appcloud2.in.zhihu.com,REJECT,extended-matching,pre-matching
+DOMAIN,crash2.zhihu.com,REJECT,extended-matching,pre-matching
+DOMAIN,mqtt.zhihu.com,REJECT,extended-matching,pre-matching
+DOMAIN,sugar.zhihu.com,REJECT,extended-matching,pre-matching
+DOMAIN,zxid-m.mobileservice.cn,REJECT,extended-matching,pre-matching
+IP-CIDR,103.41.167.237/32,REJECT,no-resolve,pre-matching
+IP-CIDR,118.89.204.198/32,REJECT,no-resolve,pre-matching
+IP-CIDR,182.61.194.7/32,REJECT,no-resolve,pre-matching
+IP-CIDR6,2402:4e00:1200:ed00:0:9089:6dac:96b6/128,REJECT,no-resolve,pre-matching
+# 最右
+DOMAIN,adapi.izuiyou.com,REJECT,extended-matching,pre-matching
+URL-REGEX,"^http:\/\/mercury-gateway\.ixiaochuan\.cn\/mercury\/v1\/ad\/",REJECT-TINYGIF,extended-matching
+URL-REGEX,"^http:\/\/file-share\.izuiyou\.com\/octopus\/media\/templates\/search_home_page_(nv|nv_v2)\/search_home_page_nv",REJECT,extended-matching
+
+[Body Rewrite]
+# 百度贴吧
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["activity_switch"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["video_report_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["advertisement_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["next_start"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["push_strategy_new"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["live_activity_guide"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["h5_pop_ups"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["duxiaoman_url"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["is_need_remind_live_rooms"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["floating_icon"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_stlog_switch"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["first_time_motivate"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["windowStrategyList"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_adsense"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["videoup_guide_pop"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_origin_config_switch"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["needNewUserLead"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["h5_pop_ups_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["alaTabColor"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["search_guide"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_sdk_priority"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["low_version_pop_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_num_competition_frs"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["live_new_user_guide_day"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["screen_fill_data_result"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["yy_live_tab"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["ad_num_competition_personalize"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["complete_apk_url"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["user_activity"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["homepage_guide"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["bottom_bubble_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["home_screen_ad"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["afSearch_tab"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["recent_client_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["video_activity"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["namoaixud_url"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["yy_live_config"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["user_growth_task_list"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["cloud_control_data_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","pb_banner_funad_cache_strategy"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","pb_comment_asyncafd_cache_strategy"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","download_edge_float"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","download_pause_retain_dialog_conf"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","download_mobile_dialog_conf"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","download_fake_progress_config_a"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["wl_config","download_fake_progress_config_b"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'delpaths([["scheme_whitelist"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("home_ad_num")) then (setpath(["wl_config","home_ad_num"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("frs_ad_num")) then (setpath(["wl_config","frs_ad_num"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("pb_comment_ad_num")) then (setpath(["wl_config","pb_comment_ad_num"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("index_bear_density")) then (setpath(["wl_config","index_bear_density"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("frs_bear_density")) then (setpath(["wl_config","frs_bear_density"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("index_bear_first_floor_max")) then (setpath(["wl_config","index_bear_first_floor_max"]; 999999999)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ 'if (getpath(["wl_config"]) | has("index_bear_first_floor_min")) then (setpath(["wl_config","index_bear_first_floor_min"]; 999999999)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/s\/sync$ '.index_tab_info |= map(select(.tab_name == "推荐")) | .top_level_navi |= {"推荐": .["推荐"], "侧边栏": .["侧边栏"], "关注": .["关注"]}'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["url_map"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["user_agent_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["bubble_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["duxiaoman_entry"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["uc_card"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["finance_tab"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["vip_banner"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["ala_live_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["recom_naws_list"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["duxiaoman"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["user","consume_info"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'delpaths([["namoaixud_entry"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ 'if (getpath(["user","shake_ad_switch"]) | has("is_show")) then (setpath(["user","shake_ad_switch","is_show"]; 0)) else . end'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/u\/user\/profile$ '.custom_grid |= map(select(.title != "游戏大厅" and .title != "预约管理" and .title != "领话费" and .title != "短故事")) | .zone_info |= map(.common_func |= (if .common_func_noraml then .common_func_noraml |= map(select(.name != "创建智能体")) else . end)) | .zone_info |= map(select(.type != "commerce" and .type != "banner" and .type != "game"))'
+http-response-jq ^https?:\/\/tieba\.baidu\.com\/c\/f\/forum\/forumGuide$ 'delpaths([["hot_search"]])'
+http-response-jq ^https?:\/\/tieba\.baidu\.com\/c\/f\/frs\/frsBottom\? 'delpaths([["card_activity"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/f\/frs\/frsBottom$ 'delpaths([["card_activity"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/f\/sidebar\/home$ 'delpaths([["game_center"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/f\/sidebar\/home$ 'delpaths([["tools"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/f\/sidebar\/home$ 'delpaths([["task_list"]])'
+http-response-jq ^https?:\/\/tiebac\.baidu\.com\/c\/f\/sidebar\/home$ 'delpaths([["vip_banner"]])'
+# 百度网盘
+http-response-jq ^https:\/\/pan\.baidu\.com\/feed\/kingkongdistrict\? '.data.data |= map(select(.type != "novel" and .type != "shortplay" and .type != "print" and .type != "job_hunt"))'
+# 拼多多
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\? 'delpaths([["result","dy_module","irregular_banner_dy"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\? 'delpaths([["result","icon_set"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\? 'delpaths([["result","search_bar_hot_query"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\? 'delpaths([["result","dy_module","irregular_banner_dy"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\? '.result.bottom_tabs? |= map(select(.link | IN("index.html", "chat_list.html", "personal.html"))) | .result.buffer_bottom_tabs? |= map(select(.link | IN("index.html", "chat_list.html", "personal.html"))) | .result.all_top_opts |= map(del(.selected_image, .image, .height, .width))'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/search\? 'delpaths([["expansion"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\? 'delpaths([["monthly_card_entrance"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\? 'delpaths([["personal_center_style_v2_vo"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\? 'delpaths([["icon_set","icons"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\? 'delpaths([["icon_set","top_personal_icons"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\? 'delpaths([["bottom_section_list"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\? 'delpaths([["ui","bottom_section"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\? 'delpaths([["ui","live_section","float_info"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_detail_group\? 'delpaths([["data","goods_list"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/order\/ 'delpaths([["marketing_banner_vo"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/order\/ 'delpaths([["shipping","banner_above_recommend"]])'
+http-response-jq ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/order_list_v4\? '.orders |= map(.order_buttons |= map(del(.order_growth_tip)))'
+# 京东
+http-response-jq ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig 'if (getpath(["data","JDMessage","socketmonitor"]) | has("isSocketEstablishedAhead")) then (setpath(["data","JDMessage","socketmonitor","isSocketEstablishedAhead"]; 0)) else . end'
+http-response-jq ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig 'if (getpath(["data","JDMessage","socketmonitor"]) | has("isSocketReport")) then (setpath(["data","JDMessage","socketmonitor","isSocketReport"]; 0)) else . end'
+http-response-jq ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig 'if (getpath(["data","JDHttpToolKit","httpdns"]) | has("httpdns")) then (setpath(["data","JDHttpToolKit","httpdns","httpdns"]; 0)) else . end'
+# 脉脉
+http-response-jq ^https:\/\/(h3\.)?open\.taou\.com\/maimai\/feed\/v6\/detail_recommend_feeds\? 'delpaths([["feeds"]])'
+# 闲鱼
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.nextfresh\/ '.data.homeTopList |= map(select(.sectionType == "kingkongDo")) | .data.sections |= map(select(.data.clickParam.args.cardType as $ct | $ct != "homeMultiBanner" and $ct != "mamaAD")) | .data.sections |= map(select((.template.name|type=="string")and(.template.name=="idlefish_home_new_commodity_card"or(.template.name|contains("fish_home_tags_item_card")))))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.widget\.refresh\.get\/ '.data.homeTopList |= map(select(.sectionType == "kingkongDo"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.home\.whale\.modulet\/ '.data.container.sections |= map(select(.template.name == "fish_home_miniapp"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.fun\.follow\.feed\.list\/ '.data.sections|=map(select(.cardType==2001))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.community\/ '.data.feedsList |= map(select(.template.name == "idlefish_home_new_commodity_card" or .template.name == "idlefish_home_new_content_card"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.newitem\.page\/ '.data.sections |= map(select(.data.clickParam.args.cardType as $ct | $ct != "banner" and $ct != "mamaAD"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.flow\.plat\.section\/ '.data.data.components |= map(select(.data and (.data|type=="object") and .data.template and (.data.template|type=="object") and .data.template.name and (.data.template.name|type=="string") and (.data.template.name|contains("fish_city_kingkong"))))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\.top\/ '.data.data.components |= map(select(.key == "fish_home_second_stage_top_cardV3"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.home\/ '.data.sections |= map(select((.template.cardEnum != "ads") and (.cardType == "common")))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.idle\.user\.page\.my\.adapter\/ '.data.container.sections |= map(select(.template.name | test("^my_fy[0-9]+_(header|user_info|trade|appraise|tools)$"))) | .data.container.sections |= map(.item |= (if .level and .level.exContent and (.level.exContent | has("tips")) then del(.level) else . end))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.idle\.user\.page\.my\.adapter\/ '  .data.container.sections[] |= (   if .item.tool then     .item.tool.exContent.tools = [       [         {           "targetUrl": "https://h5.m.goofish.com/wow/moyu/moyu-project/fish-ad/pages/home?kun=true&fromScene=myPage",           "exContent": {             "title": "超级擦亮",             "icon": "https://gw.alicdn.com/imgextra/i2/O1CN01bVNpPu1eGbSDs0GSR_!!6000000003844-2-tps-84-84.png",             "toolId": 23           },           "clickParam": {             "args": {               "toolId": "23"             },             "arg1": "Function"           }         },         {           "targetUrl": "https://h5.m.goofish.com/wow/moyu/moyu-project/moyu-tb-resell/pages/newResell?isNeedRefresh=0&setTab=1",           "exContent": {             "title": "淘宝转卖",             "icon": "https://gw.alicdn.com/imgextra/i2/O1CN01JTbPcx1Qrn3n9w03n_!!6000000002030-2-tps-84-84.png",             "toolId": 11           },           "clickParam": {             "args": {               "toolId": "11"             },             "arg1": "Function"           }         },         {           "targetUrl": "https://h5.m.goofish.com/wow/moyu/moyu-project/experience-officer/pages/home?kun=true",           "exContent": {             "title": "闲鱼体验官",             "icon": "https://gw.alicdn.com/imgextra/i1/O1CN016leRFv1N0Fprgaghl_!!6000000001507-2-tps-84-84.png",             "toolId": 2           },           "clickParam": {             "args": {               "toolId": "2"             },             "arg1": "Function"           }         },         {           "targetUrl": "https://h5.m.goofish.com/wow/moyu/moyu-project/seafood-qa/pages/my-content?useCusFont=true&loadingVisible=false",           "exContent": {             "title": "帖子中心",             "icon": "https://gw.alicdn.com/imgextra/i1/O1CN01Cge0QO1R2K5RfoaOw_!!6000000002053-2-tps-84-84.png",             "toolId": 13           },           "clickParam": {             "args": {               "toolId": "13"             },             "arg1": "Function"           }         }       ],       [         {           "targetUrl": "https://h5.m.goofish.com/app/msd/buyer-aqcenter/index.html?source=316#/notice",           "exContent": {             "title": "闲鱼公约",             "icon": "https://img.alicdn.com/imgextra/i4/O1CN01A9ofQ51t1EOZfykDn_!!6000000005841-2-tps-84-84.png",             "toolId": 20           },           "clickParam": {             "args": {               "toolId": "20"             },             "arg1": "Function"           }         },         {           "targetUrl": "https://h5.m.goofish.com/wow/moyu/moyu-project/cro-security-center/pages/security-center",           "exContent": {             "title": "安全中心",             "icon": "https://gw.alicdn.com/imgextra/i4/O1CN013kllih1NlQd6e3sRv_!!6000000001610-2-tps-84-84.png",             "toolId": 1           },           "clickParam": {             "args": {               "toolId": "1"             },             "arg1": "Function"           }         }       ]     ]   else     .   end )'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlehome\.home\.circle\.list\/ '.data.circleList[].showInfo.titleImage |= (.lightUrl="" | .url="" | del(.width, .height))'
+http-response-jq ^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\/ '.data.resultList |= map(if .data.item.main.exContent.dislikeFeedback.clickParam.args.bizType == "ad" then empty else . end)'
+http-response-jq ^https:\/\/g-acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\/ 'delpaths([["data","resultPrefixBar"]])'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\.discover\/ '.data.resultList |= map(select(.type != "MarketHotSpot"))'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.item\.search\.activate\/ '.data.cardList |= map(if has("cardData") and (.cardData | has("hotwords")) then .cardData |= del(.hotwords) else . end)'
+http-response-jq ^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.trade\.full\.info\/ '.data.components |= map(select(.render | . == "orderStatusVO" or . == "addressInfoVO" or . == "orderInfoVO"))'
+# 高德地图
+http-response-jq ^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/marketingOperationStructured\? 'delpaths([["data","commonMaterial"]])'
+http-response-jq ^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/marketingOperationStructured\? 'delpaths([["data","tipsOperationLocation"]])'
+http-response-jq ^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/marketingOperationStructured\? 'delpaths([["data","resourcePlacement"]])'
+http-response-jq ^https:\/\/m5\.amap\.com\/ws\/shield\/search_poi\/homepage\? 'delpaths([["history_tags"]])'
+http-response-jq ^https:\/\/m5-zb\.amap\.com\/ws\/sharedtrip\/taxi\/order_detail_car_tips\? 'delpaths([["data","carTips","data","popupInfo"]])'
+# 小黑盒
+http-response-jq ^https:\/\/api\.xiaoheihe\.cn\/bbs\/app\/feeds\/news '.result.links |= map(if .content_type == 27 then del(.title, .ad_pm, .img_gif, .idea_id, .ad_report, .label, .source, .intranet_only, .ad_cm, .content_type, .PROTOCOL, .img, .ad_ratio) else . end)'
+# 什么值得买
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'if (getpath(["data"]) | has("silence_local_push")) then (setpath(["data","silence_local_push"]; 0)) else . end'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'if (getpath(["data"]) | has("baichuan_redirect_switch")) then (setpath(["data","baichuan_redirect_switch"]; 0)) else . end'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'delpaths([["data","silence_local_push_msg"]])'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'delpaths([["data","video_cache_num_configs"]])'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'delpaths([["data","haojia_widget"]])'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'delpaths([["data","widget"]])'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'delpaths([["data","operation_float"]])'
+http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'def r: if type=="object" then if has("ad_campaign_name") and (.ad_campaign_name|type=="string") and (.ad_campaign_name|test("\\S")) then empty else . end elif type=="array" then map(r) else . end; .data.operation_float |= map(map(r))'
+http-response-jq ^https:\/\/homepage-api\.smzdm\.com\/v3\/home\? '   .data.component |= map(    if (.zz_content | type) == "array" then     .zz_content |= map(       select(         ( (.ad_campaign_id? | type == "string" and length > 0)// false ) or         ( (.tag? | type == "string" and length > 0)// false ) or         ( (.model_type? == "ads" and (type == "string"))// false )         | not       )     )   else . end )  | .data.component |= map(   select(.zz_type == "circular_banner" or .zz_type == "filter" or .zz_type == "list") )  | .data.component |= map(   .zz_content |= (     if type == "array" then       map(         if type == "object" and (.article_channel_type// "") == "questionnaire" then           empty         else           .         end       )     else       .     end   ) )   | del(.data.theme)  | .data.component |= map(   if .zz_content | type == "object" then     .zz_content |= del(.circular_banner_option)   else     .   end )'
+http-response-jq ^https:\/\/haojia-api\.smzdm\.com\/home\/list\? 'delpaths([["data","header_operation","theme"]])'
+http-response-jq ^https:\/\/haojia-api\.smzdm\.com\/home\/list\? '.data.rows |= map(select(.cell_type == "39001")) | .data.banner_v2 |= map(select(.cell_type == "21028"))'
+http-response-jq ^https:\/\/haojia\.m\.smzdm\.com\/detail_modul\/user_related_modul\? 'delpaths([["data","super_coupon"]])'
+http-response-jq ^https:\/\/haojia\.m\.smzdm\.com\/detail_modul\/other_modul\? 'delpaths([["data","banner"]])'
+http-response-jq ^https:\/\/user-api\.smzdm\.com\/vip$ 'delpaths([["data","activity_entrance_info"]])'
+http-response-jq ^https:\/\/user-api\.smzdm\.com\/vip$ 'delpaths([["data","big_banner"]])'
+http-response-jq ^https:\/\/user-api\.smzdm\.com\/vip$ 'delpaths([["data","top_banner"]])'
+http-response-jq ^https:\/\/user-api\.smzdm\.com\/vip$ 'delpaths([["data","banner_switch"]])'
+http-response-jq ^https:\/\/user-api\.smzdm\.com\/vip$ 'delpaths([["data","yaoqingshaiwu"]])'
+http-response-jq ^https:\/\/s-api\.smzdm\.com\/sou\/list_v10\? '.data.rows |= map(select(.model_type != "ads")) | .data.top_aladdin |= map(select(has("ad") | not))'
+http-response-jq ^https:\/\/s-api\.smzdm\.com\/sou\/filter\/tags\/hot_tags\? 'delpaths([["data","search_faxian"]])'
+http-response-jq ^https:\/\/s-api\.smzdm\.com\/sou\/filter\/tags\/hot_tags\? 'delpaths([["data","tonglan"]])'
+http-response-jq ^https:\/\/s-api\.smzdm\.com\/sou\/filter\/tags\/hot_tags\? 'delpaths([["data","hongbao"]])'
+http-response-jq ^https:\/\/s-api\.smzdm\.com\/sou\/filter\/tags\/hot_tags\? '.data.search_hot.home |= map(select(.article_tag.article_title != "广告")) | .data.search_hot.home |= map(select(has("pos")))'
+http-response-jq ^https:\/\/haojia-api\.smzdm\.com\/detail\/\d+\? 'delpaths([["data","quan_log"]])'
+http-response-jq ^https:\/\/haojia-cdn\.smzdm\.com\/preload\/\d+\/fiphone\/v\d+_\d+_\d+\/wx\d+\/im\d+\/[0-9a-z]+\/[0-9a-z]+\.json$ 'delpaths([["data","quan_log"]])'
+http-response-jq ^https:\/\/post\.m\.smzdm\.com\/ajax_app\/ajax_get_footer_list\? 'delpaths([["data","tuiguang_ad"]])'
+http-response-jq ^https:\/\/post\.m\.smzdm\.com\/ajax_app\/ajax_get_footer_list\? 'delpaths([["data","activity_banner"]])'
+# 知乎
+http-response-jq ^https:\/\/api\.zhihu\.com\/bazaar\/vip_tab\/header\? 'delpaths([["activity_banner"]])'
+http-response-jq ^https:\/\/api\.zhihu\.com\/bazaar\/vip_tab\/header\? 'delpaths([["activity_window"]])'
+http-response-jq ^https:\/\/api\.zhihu\.com\/bazaar\/vip_tab\/header\? 'delpaths([["vip_tip"]])'
+http-response ^https:\/\/api\.zhihu\.com\/search\/recommend_query\/v2\? "recommend_queries":\{.+\} "recommend_queries":{}
+http-response-jq ^https:\/\/api\.zhihu\.com\/questions\/\d+(?:\/answers|\/feeds|\?include=) 'del(.ad_info, .data.ad_info?, .query_info) | if (.data | type) == "array" then .data |= map(select(.target?.answer_type?// "" | tostring | contains("paid") | not)) else . end'
+
+[Map Local]
+# 百度贴吧
+^https?:\/\/tiebac\.baidu\.com\/c\/f\/forum\/getInterestClassList$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/tiebac\.baidu\.com\/c\/f\/search\/discover$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/tieba\.baidu\.com\/c\/f\/search\/discover$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/tieba\.baidu\.com\/c\/f\/forum\/getForumAlbum$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^http:\/\/c\.tieba\.baidu\.com\/c\/f\/forum\/hotforum$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/tieba\.baidu\.com\/mo\/q\/search\/startPage\? data-type=text data="{"no":0,"error":"success"}" status-code=200 header="Content-Type:application/json"
+# 百度网盘
+^https:\/\/pan\.baidu\.com\/api\/getconfig\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/api\/getsyscfg\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/api\/taskscore\/tasklist\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/act\/api\/activityentry\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/rest\/\d\.\d\/pcs\/adv\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/api\/plugin\/get\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/pan\.baidu\.com\/recommend\/query\/list\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 拼多多
+^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/unrated_order_for_unreceived_tab\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/query_order_list_tabs_element\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/aquarius\/hungary\/global\/homepage\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_express_group\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/search_hotquery\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/zaire_biz\/chat\/resource\/get_list_data\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/new_chat_group\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/alexa\/goods\/back_up\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/personal\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/brand-olay\/goods_detail\/bybt_guide\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/engels\/reviews\/require\/append\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/my_order_group\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/likes\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/phantom\/gbdbpdv\/extra\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/manufacturer\/cross\/shortcut\/list\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/dunkirk\/liveactivity\/push\/create\/url\/report\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/growth\/nagato\/app\/index\/gather\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/engels\/wait\/receive\/review\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.pinduoduo\.com\/api\/buffon\/nasus\/recommend\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 淘宝
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alibaba\.advertisementservice\.getadv data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimama\.etao\.config\.query\/.+?etao_advertise data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimusic\.common\.mobileservice\.startinit data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.etao\.noah\.query\/.+tao_splash data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.film\.mtopadvertiseapi\.queryadvertise data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.o2o\.ad\.gateway\.get data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.taobao\.idle\.home\.welcome data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/(?:gw|heic)\.alicdn\.com\/imgextra\/i\d\/\d*\/?[\w!]+-\d-(?:octopus|tps)-(?:1080|1125)-\d{4}\.(?:jpg|png)_(?:1\d{3}|9\d{2})x(?:\d|1\d{3}|9\d{2})q[59]0 data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(volvo\.secondfloor\.getconfig|wireless\.home\.newface\.awesome\.get) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 京东
+^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(searchBoxWord|stationPullService|uniformRecommend[06]) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 豆瓣
+^https:\/\/api\.douban\.com\/v\d\/app_ads\/splash data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/frodo\.douban\.com\/api\/v\d\/erebor\/feed_ad data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m\.douban\.com\/rexxar\/api\/v\d\/market\/products\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/frodo\.douban\.com\/api\/v\d\/movie\/ad data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/frodo\.douban\.com\/api\/v\d\/home_banner data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/frodo\.douban\.com\/api\/v\d\/search\/found_words data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 脉脉
+^https:\/\/(h3\.)?open\.taou\.com\/maimai\/adshow\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/(h3\.)?open\.taou\.com\/maimai\/pay\/v5\/check_gift\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/(h3\.)?open\.taou\.com\/maimai\/go_gossip_darwin\/external\/v2\/query_flow_cards\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 闲鱼
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlecommerce\.splash\.ads\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.user\.strategy\.list\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.item\.recommend\.list\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.local\.near\.by\.corner\.info\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.item\.buy\.feeds\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idlemtopsearch\.search\.shade\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/acs\.m\.goofish\.com\/gw\/mtop\.taobao\.idle\.playboy\.recommend\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 高德地图
+^https:\/\/m5-zb\.amap\.com\/ws\/ride\/home\/page\/get_commuting_card\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/orderList\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/shield\/search\/new_hotword\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/card-service-(?:car-end|route-plan) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/shield\/search_poi\/tips_adv\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/oss\.amap\.com\/ws\/banner\/lists\/\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/ai\.amap\.com\/v1\/ai_rec\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/aos\/main\/page\/product\/list\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc\/homeV2) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/(?:mapapi\/hint_text\/offline_data|message\/notice\/list|shield\/search\/new_hotword) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/shield\/scene\/recommend\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5\.amap\.com\/ws\/valueadded\/weather\/v2\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/sns\.amap\.com\/ws\/msgbox\/pull_mp\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5-zb\.amap\.com\/ws\/boss\/(?:order\/car\/(?:feedback\/get_card_questions|feedback\/viptips|king_toolbox_car_bubble|remark\/satisfactionConf|rights_information)|tips\/onscene_visual_optimization) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/m5-zb\.amap\.com\/ws\/boss\/(?:pay\/web\/paySuccess\/info\/request|transportation\/diversion\/resource\/driving) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 小黑盒
+^https:\/\/api\.xiaoheihe\.cn\/account\/get_ads_info_v2 data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 什么值得买
+^https:\/\/app-api\.smzdm\.com\/util\/loading\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/app-api\.smzdm\.com\/mychannel\/list$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/user-api\.smzdm\.com\/vip\/bottom_card_list\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/article-api\.smzdm\.com\/publish\/get_bubble\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/s-api\.smzdm\.com\/sou\/search_default_keyword\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/s-api\.smzdm\.com\/sou\/popup_coupon\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 知乎
+^https:\/\/api\.zhihu\.com\/commercial_api\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/content-distribution-core\/bubble\/common\/settings data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/(?:moments\/lastread|drama\/hot-drama-list) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/root\/window data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/(?:bazaar\/float_window|market\/popovers_v2) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/me\/guides data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/people\/homepage_entry_v2 data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/search\/(hot_search|preset_words) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/api\/v4\/search\/clicked_recommendation\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/api\/v4\/search\/related_queries\/(?:article|answer)\/\d+ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/comment_v5\/(?:articles|answers)\/\d+\/list-headers data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/prague\/related_suggestion_native\/feed\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/v5\.1\/topics\/answer\/\d+\/relation data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/ab\/api\/v1\/products\/zhihu\/platforms\/ios\/config data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/ad-style-service\/request data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/appcloud2\.zhihu\.com\/v3\/resource\?group_name=mp data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.zhihu\.com\/distribute\/rhea\/qa_ad_card\/h5\/recommendation\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/api\/v4\/hot_recommendation data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/api\/v4\/mcn\/v2\/linkcards\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/api\/v4/(?:answers|questions)\/\d+/related-readings data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/www\.zhihu\.com\/commercial_api\/banners_v3\/mobile_banner data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/zhuanlan\.zhihu\.com\/api\/articles\/\d+\/recommendation data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 最右
+^https?:\/\/api\.izuiyou\.com\/config\/get_banner data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/zyfile\.izuiyou\.com\/zyfile\/c2\/a0\/[a-z0-9-]+\.json data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+
+[Script]
+# 百度贴吧
+百度贴吧-ProtoBuf处理 = type=http-response, pattern=^https?:\/\/tieba(?:c)?\.baidu\.com\/c\/(f\/excellent\/personalized|f\/frs\/page|b\/ad\/adBid|f\/ad\/getFeedAd|f\/pb\/page|f\/frs\/generalTabList)\?cmd=\d+&format=protobuf, script-path=https://kelee.one/Resource/JavaScript/Tieba/tieba-proto.js, requires-body=true, binary-body-mode=true, timeout=10, argument=[{{{per_filter_video_thread}}}]
+# 淘宝
+淘宝-移除淘宝开屏广告 = type=http-response, pattern=^https:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get), script-path=https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js, requires-body=true
+淘宝-移除淘宝开屏广告2 = type=http-response, pattern=^https:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, script-path=https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js, requires-body=true
+# 京东
+京东-移除京东广告 = type=http-response, pattern=^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome), script-path=https://kelee.one/Resource/JavaScript/JD/JD_remove_ads.js, requires-body=true
+# 脉脉
+脉脉-移除信息流和评论区大块广告 = type=http-response, pattern=^https:\/\/(h3\.)?open\.taou\.com\/maimai\/(feed|gossip)\/v\d\/(focus_feed|gossip_detail_comment|feed_detail_comment?)\?, script-path=https://kelee.one/Resource/JavaScript/MaiMai/MaiMai_remove_ads.js, requires-body=true
+# 高德地图
+高德地图-移除路线规划推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/aos\/perception\/publicTravel\/beforeNavi\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除路线规划、导航结束页推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/bus\/plan\/integrate\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除导航详情页底部酒店、处理附近页 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/c3frontend\/(?:af-(?:hotel|launch)\/page\/main|af-nearby\/nearby), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除路线规划推广2 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/perception\/drive\/(?:routeInfo|routePlan), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除搜索栏推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/shield\/search_bff\/hotword\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除搜索详情页推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/shield\/search_poi\/(?:mps|search\/sp|sug|tips_operation_location), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除首页推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/(?:card-service-plan-home|main-page), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除首页推广2 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/shield\/frogserver\/aocs\/updatable\/1\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除我的页面推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/shield\/dsp\/profile\/index\/nodefaasv3\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除附近页推广 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/shield\/search\/nearbyrec_smart\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除开屏广告 = type=http-response, pattern=^https:\/\/m5\.amap\.com\/ws\/valueadded\/alimama\/splash_screen\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除打车页推广卡片、弹窗 = type=http-response, pattern=^https:\/\/m5-zb\.amap\.com\/ws\/boss\/(?:car\/order\/content_info|order_web\/friendly_information), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除打车页红点角标、天气图标 = type=http-response, pattern=^https:\/\/m5-zb\.amap\.com\/ws\/promotion-web\/resource(\/home)?\?, script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+高德地图-移除导航详情页推广 = type=http-response, pattern=^https:\/\/(?:info|m5)\.amap\.com\/ws\/shield\/search\/(?:common\/coupon\/info|poi\/detail), script-path=https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js, requires-body=true
+# YouTube
+YouTube-youtube.response = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/(youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event|config))(\?(.*))?$,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js,argument="{"captionLang":"{{{字幕翻译语言}}}","blockUpload":{{{屏蔽上传按钮}}},"blockImmersive":{{{屏蔽选段按钮}}},"blockShorts":{{{屏蔽Shorts按钮}}},"debug":{{{启用调试模式}}}}"
+YouTube-youtube.request.init = type=http-request,pattern=^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.*,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js,argument="{"captionLang":"{{{字幕翻译语言}}}"}"
+YouTube-youtube.request.log_event = type=http-request,pattern=^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js
+# 知乎
+知乎-移除回答底部卡片推广 = type=http-response, pattern=^https:\/\/(?:api|page-info)\.zhihu\.com\/(?:answers|articles)\/v2\/\d+, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除首页悬浮图标 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/commercial_api\/app_float_layer, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除推荐信息流推广 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/feed\/render\/tab\/config\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除推荐信息流推广2 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/(?:moments_v3|topstory\/hot-lists\/total|topstory\/recommend), script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-精简顶部标签 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/root\/tab, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除热榜信息流推广 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/v2\/topstory\/hot-lists\/everyone-seeing\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除下一个回答推广、评论区顶部推广 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/next-(?:bff|data|render), script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-移除回答详情页推广 = type=http-response, pattern=^https:\/\/www\.zhihu\.com\/api\/v4\/(?:articles|answers)\/\d+\/recommendations?\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-拦截服务器推送配置 config = type=http-response, pattern=^https:\/\/appcloud2\.zhihu\.com\/v3\/config, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+知乎-拦截服务器推送配置 config all = type=http-response, pattern=^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/zhihu\/config\/all\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+
+[URL Rewrite]
+# 什么值得买
+^https:\/\/h5\.smzdm\.com\/user\/coupon\/coupon_list\? - reject
+# 知乎
+^https:\/\/api\.zhihu\.com\/unlimited\/go\/my_card - reject
+^https:\/\/www\.zhihu\.com\/appview\/v3\/zhmore - reject
+^https:\/\/link\.zhihu\.com\/\?target=(?:https?)?(?:%3A|:)?(?:\/\/|%2F%2F)?(.*) http://$1 302
+# 最右
+^https?:\/\/api\.izuiyou\.com\/ad\/ - reject
+
+[MITM]
+hostname = %APPEND% tiebac.baidu.com, tieba.baidu.com, pan.baidu.com, api.pinduoduo.com, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, api.m.jd.com, api.douban.com, frodo.douban.com, m.douban.com, open.taou.com, h3.open.taou.com, acs.m.goofish.com, g-acs.m.goofish.com, *.amap.com, api.xiaoheihe.cn, *.googlevideo.com, youtubei.googleapis.com, app-api.smzdm.com, homepage-api.smzdm.com, h5.smzdm.com, haojia-api.smzdm.com, haojia.m.smzdm.com, user-api.smzdm.com, article-api.smzdm.com, s-api.smzdm.com, haojia-cdn.smzdm.com, post.m.smzdm.com, *.zhihu.com, api.izuiyou.com, zyfile.izuiyou.com
