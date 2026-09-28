@@ -4,7 +4,9 @@ from collections import OrderedDict
 B = "https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/"
 APPS = ["百度贴吧", "百度网盘", "拼多多", "淘宝", "京东", "豆瓣", "脉脉", "闲鱼",
         "高德地图", "小黑盒", "什么值得买", "知乎", "最右"]
-SRC = [(a, B + urllib.parse.quote(a + "去广告.sgmodule")) for a in APPS]
+# 可莉版豆瓣需要 IPA 重签名，App Store 版豆瓣用奶思的
+OVERRIDE = {"豆瓣": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partD/Douban.sgmodule"}
+SRC = [(a, OVERRIDE.get(a) or B + urllib.parse.quote(a + "去广告.sgmodule")) for a in APPS]
 SRC.insert(10, ("YouTube", "https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule"))
 
 sections = OrderedDict()
