@@ -3,9 +3,12 @@ from collections import OrderedDict
 
 B = "https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/"
 APPS = ["百度贴吧", "百度网盘", "拼多多", "淘宝", "京东", "豆瓣", "脉脉", "闲鱼",
-        "高德地图", "小黑盒", "什么值得买", "知乎", "最右"]
-# 可莉版豆瓣需要 IPA 重签名，App Store 版豆瓣用奶思的
-OVERRIDE = {"豆瓣": "https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partD/Douban.sgmodule"}
+        "高德地图", "小黑盒", "什么值得买", "知乎", "最右",
+        "12306", "丰巢", "虎扑", "迅雷", "X"]
+# 可莉版豆瓣、丰巢需要 IPA 重签名，App Store 版用奶思的；X 可莉仓库里没有
+F = "https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/"
+OVERRIDE = {"豆瓣": F + "partD/Douban.sgmodule", "丰巢": F + "partF/FengChao.sgmodule",
+            "X": F + "partT/Twitter.sgmodule"}
 SRC = [(a, OVERRIDE.get(a) or B + urllib.parse.quote(a + "去广告.sgmodule")) for a in APPS]
 SRC.insert(10, ("YouTube", "https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule"))
 
@@ -40,7 +43,7 @@ for app, url in SRC:
         elif cur:
             sections[cur].append(line)
 
-out = ["#!name=去广告合集", "#!desc=百度贴吧/网盘、拼多多、淘宝、京东、豆瓣、脉脉、闲鱼、高德、YouTube、小黑盒、什么值得买、知乎、最右"]
+out = ["#!name=去广告合集", "#!desc=" + "、".join(a for a, _ in SRC) + ""]
 if args:
     out.append("#!arguments=" + ",".join(args))
 if args_desc:

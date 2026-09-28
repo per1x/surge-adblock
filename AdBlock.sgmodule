@@ -1,5 +1,5 @@
 #!name=去广告合集
-#!desc=百度贴吧/网盘、拼多多、淘宝、京东、豆瓣、脉脉、闲鱼、高德、YouTube、小黑盒、什么值得买、知乎、最右
+#!desc=百度贴吧、百度网盘、拼多多、淘宝、京东、豆瓣、脉脉、闲鱼、高德地图、小黑盒、YouTube、什么值得买、知乎、最右、12306、丰巢、虎扑、迅雷、X
 #!arguments=per_filter_video_thread:"true",屏蔽上传按钮:true,屏蔽选段按钮:true,屏蔽Shorts按钮:false,字幕翻译语言:off,启用调试模式:false
 #!arguments-desc=- 屏蔽参数：[true, false] \n- 翻译参数：[语言代码, off] \n\n1. 语言代码遵循 Google Translate Languages Codes, 当填入 off 时关闭翻译\n2. 开启调试模式用于输出更多日志
 
@@ -58,6 +58,15 @@ IP-CIDR6,2402:4e00:1200:ed00:0:9089:6dac:96b6/128,REJECT,no-resolve,pre-matching
 DOMAIN,adapi.izuiyou.com,REJECT,extended-matching,pre-matching
 URL-REGEX,"^http:\/\/mercury-gateway\.ixiaochuan\.cn\/mercury\/v1\/ad\/",REJECT-TINYGIF,extended-matching
 URL-REGEX,"^http:\/\/file-share\.izuiyou\.com\/octopus\/media\/templates\/search_home_page_(nv|nv_v2)\/search_home_page_nv",REJECT,extended-matching
+# 12306
+DOMAIN,ad.12306.cn,DIRECT,extended-matching
+# X
+DOMAIN-SUFFIX,ads-twitter.com,REJECT
+DOMAIN-SUFFIX,p.twitter.com,REJECT
+DOMAIN-SUFFIX,scribe.twitter.com,REJECT
+DOMAIN-SUFFIX,syndication.twitter.com,REJECT
+DOMAIN-SUFFIX,syndication-o.twitter.com,REJECT
+DOMAIN-SUFFIX,urls.api.twitter.com,REJECT
 
 [Body Rewrite]
 # 百度贴吧
@@ -224,6 +233,11 @@ http-response-jq ^https:\/\/api\.zhihu\.com\/bazaar\/vip_tab\/header\? 'delpaths
 http-response-jq ^https:\/\/api\.zhihu\.com\/bazaar\/vip_tab\/header\? 'delpaths([["vip_tip"]])'
 http-response ^https:\/\/api\.zhihu\.com\/search\/recommend_query\/v2\? "recommend_queries":\{.+\} "recommend_queries":{}
 http-response-jq ^https:\/\/api\.zhihu\.com\/questions\/\d+(?:\/answers|\/feeds|\?include=) 'del(.ad_info, .data.ad_info?, .query_info) | if (.data | type) == "array" then .data |= map(select(.target?.answer_type?// "" | tostring | contains("paid") | not)) else . end'
+# 迅雷
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","entrance_list_vertical_enable"]])'
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","common_service_list"]])'
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","banner_service_list"]])'
+http-response-jq ^https:\/\/api-shoulei-ssl\.xunlei\.com\/flowhub\/v1\/slots:batchGet$ '.slots |= map(select(.id == "xl_ios_mytab_vipicon" or (.native.assets.title.text.value? and (.native.assets.title.text.value | . == "清理助手" or . == "云盘容量" or . == "远程设备"))))'
 
 [Map Local]
 # 百度贴吧
@@ -342,6 +356,15 @@ http-response-jq ^https:\/\/api\.zhihu\.com\/questions\/\d+(?:\/answers|\/feeds|
 # 最右
 ^https?:\/\/api\.izuiyou\.com\/config\/get_banner data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/zyfile\.izuiyou\.com\/zyfile\/c2\/a0\/[a-z0-9-]+\.json data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 虎扑
+^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/reddot\/v1\/app\/getReddot data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/bbs\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/(bbsallapi\/tag\/v1\/heatTag|bbsrankapi\/v1\/rating\/list) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/search\/v2\/(hintkeylist|hotkeylist) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/goblin\.hupu\.com\/\d\/\d\.\d\.\d+\/interfaceAd\/getOther\/v\d data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/goblin\.hupu\.com\/\d\/\d\.\d\.\d+\/interfaceAd\/getOther\/batch data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/fairy\.mobileapi\.hupu\.com\/gallery\/getmod2 data-type=text data=" " status-code=200
+^https:\/\/games\.mobileapi\.hupu\.com\/3\/8\.0\.86\/bplcommentapi\/bpl\/score_tab\/groups data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/games\.mobileapi\.hupu\.com\/3\/8\.0\.86\/bplapi\/banner\/getLocationBanners data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 [Script]
 # 百度贴吧
@@ -383,6 +406,14 @@ YouTube-youtube.request.log_event = type=http-request,pattern=^https:\/\/youtube
 知乎-移除回答详情页推广 = type=http-response, pattern=^https:\/\/www\.zhihu\.com\/api\/v4\/(?:articles|answers)\/\d+\/recommendations?\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
 知乎-拦截服务器推送配置 config = type=http-response, pattern=^https:\/\/appcloud2\.zhihu\.com\/v3\/config, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
 知乎-拦截服务器推送配置 config all = type=http-response, pattern=^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/zhihu\/config\/all\?, script-path=https://kelee.one/Resource/JavaScript/Zhihu/Zhihu_remove_ads.js, requires-body=true
+# 12306
+12306-移除12306开屏广告 = type=http-request, pattern=^https:\/\/ad\.12306\.cn\/ad\/ser\/getAdList$, script-path=https://kelee.one/Resource/JavaScript/12306/12306_remove_splashscreen_ads.js, requires-body=true
+12306-移除12306应用内广告 = type=http-request, pattern=^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$, script-path=https://kelee.one/Resource/JavaScript/12306/12306_remove_ads.js
+# 虎扑
+虎扑-移除虎扑广告 = type=http-response, pattern=^https:\/\/fairy\.mobileapi\.hupu\.com\/mang\/preview\/banners, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true
+虎扑-移除虎扑广告2 = type=http-response, pattern=^https:\/\/bbs\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bbsallapi\/lego\/data, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true
+虎扑-移除虎扑广告3 = type=http-response, pattern=^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/buffer\/hotList, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true
+虎扑-移除虎扑广告4 = type=http-response, pattern=^https:\/\/games\.mobileapi\.hupu\.com\/\d\/\d\.\d\.\d+\/bplapi\/user\/v1\/more, script-path=https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js, requires-body=true
 
 [URL Rewrite]
 # 豆瓣
@@ -397,6 +428,12 @@ YouTube-youtube.request.log_event = type=http-request,pattern=^https:\/\/youtube
 ^https:\/\/link\.zhihu\.com\/\?target=(?:https?)?(?:%3A|:)?(?:\/\/|%2F%2F)?(.*) http://$1 302
 # 最右
 ^https?:\/\/api\.izuiyou\.com\/ad\/ - reject
+# 丰巢
+^https:\/\/dsp\.fcbox\.com\/adSearch\/get\? - reject
+^https:\/\/external\.fcbox\.com\/wxgw\/post\/suggestion\/query - reject
+^https:\/\/rtm\.fcbox\.com\/rtsWeb\/api\/resource\/ad\/queryAd - reject
+# 已无法MITM
+^https?:\/\/consumer\.fcbox\.com\/v\d\/ad\/ - reject
 
 [MITM]
-hostname = %APPEND% tiebac.baidu.com, tieba.baidu.com, pan.baidu.com, api.pinduoduo.com, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, api.m.jd.com, api.douban.com, open.taou.com, h3.open.taou.com, acs.m.goofish.com, g-acs.m.goofish.com, *.amap.com, api.xiaoheihe.cn, *.googlevideo.com, youtubei.googleapis.com, app-api.smzdm.com, homepage-api.smzdm.com, h5.smzdm.com, haojia-api.smzdm.com, haojia.m.smzdm.com, user-api.smzdm.com, article-api.smzdm.com, s-api.smzdm.com, haojia-cdn.smzdm.com, post.m.smzdm.com, *.zhihu.com, api.izuiyou.com, zyfile.izuiyou.com
+hostname = %APPEND% tiebac.baidu.com, tieba.baidu.com, pan.baidu.com, api.pinduoduo.com, acs.m.taobao.com, heic.alicdn.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com, api.m.jd.com, api.douban.com, open.taou.com, h3.open.taou.com, acs.m.goofish.com, g-acs.m.goofish.com, *.amap.com, api.xiaoheihe.cn, *.googlevideo.com, youtubei.googleapis.com, app-api.smzdm.com, homepage-api.smzdm.com, h5.smzdm.com, haojia-api.smzdm.com, haojia.m.smzdm.com, user-api.smzdm.com, article-api.smzdm.com, s-api.smzdm.com, haojia-cdn.smzdm.com, post.m.smzdm.com, *.zhihu.com, api.izuiyou.com, zyfile.izuiyou.com, ad.12306.cn, mobile.12306.cn, external.fcbox.com, dsp.fcbox.com, consumer.fcbox.com, rtm.fcbox.com, games.mobileapi.hupu.com, fairy.mobileapi.hupu.com, bbs.mobileapi.hupu.com, goblin.hupu.com, conf-m-ssl.xunlei.com, api-shoulei-ssl.xunlei.com
