@@ -5,13 +5,16 @@ B = "https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/"
 APPS = ["广告平台", "百度贴吧", "百度网盘", "拼多多", "淘宝", "京东", "豆瓣", "脉脉", "闲鱼",
         "高德地图", "小黑盒", "什么值得买", "知乎", "最右",
         "12306", "丰巢", "虎扑", "迅雷", "X"]
-# 可莉版豆瓣、丰巢需要 IPA 重签名，App Store 版用奶思的；X 可莉仓库里没有
+# 可莉版丰巢需要 IPA 重签名，用奶思的；豆瓣两份叠加；X 可莉仓库里没有
 F = "https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/"
-OVERRIDE = {"豆瓣": F + "partD/Douban.sgmodule", "丰巢": F + "partF/FengChao.sgmodule",
+OVERRIDE = {"豆瓣": [B + urllib.parse.quote("豆瓣去广告.sgmodule"), F + "partD/Douban.sgmodule"], "丰巢": F + "partF/FengChao.sgmodule",
             "X": F + "partT/Twitter.sgmodule",
             # 可莉的通用规则：拦截穿山甲、广点通、百度、快手联盟等广告 SDK
             "广告平台": B + urllib.parse.quote("广告平台拦截器.sgmodule")}
-SRC = [(a, OVERRIDE.get(a) or B + urllib.parse.quote(a + "去广告.sgmodule")) for a in APPS]
+SRC = []
+for a in APPS:
+    urls = OVERRIDE.get(a) or B + urllib.parse.quote(a + "去广告.sgmodule")
+    SRC += [(a, u) for u in (urls if isinstance(urls, list) else [urls])]
 SRC.insert(10, ("YouTube", "https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule"))
 
 sections = OrderedDict()
@@ -45,7 +48,7 @@ for app, url in SRC:
         elif cur:
             sections[cur].append(line)
 
-out = ["#!name=去广告合集", "#!desc=" + "、".join(a for a, _ in SRC) + ""]
+out = ["#!name=去广告合集", "#!desc=" + "、".join(OrderedDict.fromkeys(a for a, _ in SRC)) + ""]
 if args:
     out.append("#!arguments=" + ",".join(args))
 if args_desc:
@@ -55,7 +58,7 @@ for sec, lines in sections.items():
         continue
     out += ["", sec] + lines
 # 豆瓣广告图走 img*.doubanio.com/view/dale-online/dale_ad/，要解密才能被 URL Rewrite 拦下
-hosts += ["img*.doubanio.com"]
+hosts += ["img*.doubanio.com", "erebor.douban.com"]
 out += ["", "[MITM]", "hostname = %APPEND% " + ", ".join(OrderedDict.fromkeys(hosts))]
 open(sys.argv[1], "w", encoding="utf-8").write("\n".join(out) + "\n")
 print("ok", len(out), "lines,", len(set(hosts)), "hosts")
