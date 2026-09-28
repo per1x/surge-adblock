@@ -59,6 +59,8 @@ for sec, lines in sections.items():
     out += ["", sec] + lines
 # 豆瓣广告图走 img*.doubanio.com/view/dale-online/dale_ad/，要解密才能被 URL Rewrite 拦下
 hosts += ["img*.doubanio.com", "erebor.douban.com"]
+# 解密 frodo.douban.com 会导致豆瓣影视详情打不开（blackmatrix7/ios_rule_script#1225）
+hosts = [h for h in hosts if h != "frodo.douban.com"]
 out += ["", "[MITM]", "hostname = %APPEND% " + ", ".join(OrderedDict.fromkeys(hosts))]
 open(sys.argv[1], "w", encoding="utf-8").write("\n".join(out) + "\n")
 print("ok", len(out), "lines,", len(set(hosts)), "hosts")
